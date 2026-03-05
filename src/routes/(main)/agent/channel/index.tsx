@@ -10,8 +10,8 @@ import NavHeader from '@/features/NavHeader';
 import { useAgentStore } from '@/store/agent';
 
 import { INTEGRATION_PROVIDERS } from './const';
-import PlatformDetail from './PlatformDetail';
-import PlatformList from './PlatformList';
+import PlatformDetail from './detail';
+import PlatformList from './list';
 
 const styles = createStaticStyles(({ css }) => ({
   container: css`

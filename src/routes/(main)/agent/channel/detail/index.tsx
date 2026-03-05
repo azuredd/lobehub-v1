@@ -9,7 +9,6 @@ import { useAgentStore } from '@/store/agent';
 
 import { type IntegrationProvider } from '../const';
 import Body from './Body';
-import Header from './Header';
 
 const styles = createStaticStyles(({ css, cssVar }) => ({
   main: css`
@@ -219,12 +218,8 @@ const PlatformDetail = memo<PlatformDetailProps>(({ provider, agentId, currentCo
 
   return (
     <main className={styles.main}>
-      <Header
-        currentConfig={currentConfig}
-        provider={provider}
-        onToggleEnable={handleToggleEnable}
-      />
       <Body
+        currentConfig={currentConfig}
         form={form}
         hasConfig={!!currentConfig}
         provider={provider}
@@ -236,6 +231,7 @@ const PlatformDetail = memo<PlatformDetailProps>(({ provider, agentId, currentCo
         onDelete={handleDelete}
         onSave={handleSave}
         onTestConnection={handleTestConnection}
+        onToggleEnable={handleToggleEnable}
       />
     </main>
   );
