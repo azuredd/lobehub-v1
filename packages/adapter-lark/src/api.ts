@@ -11,8 +11,8 @@ const MAX_TEXT_LENGTH = 4000;
  * Auth: app_id + app_secret -> tenant_access_token (cached, auto-refreshed).
  */
 export class LarkApiClient {
-  private readonly appId: string;
-  private readonly appSecret: string;
+  readonly appId: string;
+  readonly appSecret: string;
   private readonly baseUrl: string;
 
   private cachedToken?: string;

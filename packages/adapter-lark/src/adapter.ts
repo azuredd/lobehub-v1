@@ -1,3 +1,4 @@
+import { Domain, EventDispatcher, LoggerLevel, WSClient } from '@larksuiteoapi/node-sdk';
 import type {
   Adapter,
   AdapterPostableMessage,
@@ -39,6 +40,7 @@ export class LarkAdapter implements Adapter<LarkThreadId, LarkRawMessage> {
   private static SENDER_NAME_TTL_MS = 10 * 60_000;
   private senderNameCache = new Map<string, { expireAt: number; name: string }>();
   private senderNamePermissionDenied = false;
+  private wsClient?: WSClient;
 
   get userName(): string {
     return this._userName;
@@ -165,6 +167,82 @@ export class LarkAdapter implements Adapter<LarkThreadId, LarkRawMessage> {
     this.chat.processMessage(this, threadId, messageFactory, options);
 
     return Response.json({ ok: true });
+  }
+
+  // ------------------------------------------------------------------
+  // WebSocket long connection
+  // ------------------------------------------------------------------
+
+  /**
+   * Start a WebSocket long connection to receive events via Feishu/Lark's
+   * built-in WSClient. This eliminates the need for a public webhook URL.
+   *
+   * Note: Long connection mode is primarily supported by the Feishu (China)
+   * platform. The Lark (international) platform may not support it.
+   */
+  async startWSClient(): Promise<void> {
+    const domain = this.platform === 'feishu' ? Domain.Feishu : Domain.Lark;
+
+    const wsClient = new WSClient({
+      appId: this.api.appId,
+      appSecret: this.api.appSecret,
+      domain,
+      loggerLevel: LoggerLevel.info,
+    });
+
+    const eventDispatcher = new EventDispatcher({}).register({
+      'im.message.receive_v1': async (data: any) => {
+        this.handleWSEvent(data);
+      },
+    });
+
+    await wsClient.start({ eventDispatcher });
+    this.wsClient = wsClient;
+    this.logger.info('WSClient started for %s', this.name);
+  }
+
+  /**
+   * Stop the WebSocket long connection.
+   */
+  stopWSClient(): void {
+    if (this.wsClient) {
+      this.wsClient.close({ force: true });
+      this.wsClient = undefined;
+      this.logger.info('WSClient stopped for %s', this.name);
+    }
+  }
+
+  /**
+   * Handle an event received via WebSocket (same structure as webhook event body).
+   */
+  private handleWSEvent(data: any): void {
+    const message = data?.message;
+    const sender = data?.sender;
+
+    if (!message || !sender) return;
+
+    // Only handle text messages for now
+    if (message.message_type !== 'text') return;
+
+    let messageText = '';
+    try {
+      const content = JSON.parse(message.content);
+      messageText = content.text || '';
+    } catch {
+      return;
+    }
+
+    if (!messageText.trim()) return;
+
+    const threadId = this.encodeThreadId({
+      chatId: message.chat_id,
+      platform: this.platform,
+    });
+
+    const messageFactory = () => this.parseRawEvent(message, sender, threadId, messageText);
+
+    // Delegate to Chat SDK pipeline (no webhook options needed for WS)
+    this.chat.processMessage(this, threadId, messageFactory);
   }
 
   // ------------------------------------------------------------------
