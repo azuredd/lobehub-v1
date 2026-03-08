@@ -114,6 +114,8 @@ By connecting a Feishu (or Lark) channel to your LobeHub agent, team members can
   - **Verification Token** — Used to verify that webhook events originate from Feishu/Lark
   - **Encrypt Key** — Used to decrypt encrypted event payloads from Feishu/Lark
 
+  > You can find these values in the Feishu/Lark Developer Portal under **Event Subscription** → **Encryption Strategy** at the top of the page. If you haven't opened the Event Subscription page yet, you can leave these blank for now and fill them in after Step 4.
+
   ### Save and Copy the Webhook URL
 
   Click **Save Configuration**. After saving, an **Event Subscription URL** will be displayed. Copy this URL — you will need it in the next step.
@@ -125,6 +127,15 @@ By connecting a Feishu (or Lark) channel to your LobeHub agent, team members can
   ### Open Event Subscription Settings
 
   Go back to your app in the Feishu/Lark Developer Portal. Navigate to **Event Subscription**.
+
+  ### Copy Verification Token and Encrypt Key (Optional)
+
+  At the top of the Event Subscription page, under **Encryption Strategy**, you will see:
+
+  - **Verification Token** — Copy this value
+  - **Encrypt Key** — Copy this value
+
+  Go back to LobeHub and paste them into the corresponding fields if you left them blank earlier, then save again.
 
   ### Configure the Request URL
 
