@@ -195,7 +195,7 @@ const TopicItem = memo<TopicItemProps>(({ id, title, fav, active, threadId, meta
   }
 
   return (
-    <Flexbox style={{ position: 'relative' }}>
+    <Flexbox data-testid="topic-item" style={{ position: 'relative' }}>
       <NavItem
         actions={<Actions dropdownMenu={dropdownMenu} />}
         active={active && !threadId && !isInAgentSubRoute}
