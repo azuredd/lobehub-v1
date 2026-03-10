@@ -13,6 +13,7 @@ import { isQueueAgentRuntimeEnabled } from '@/server/services/queue/impls';
 import { SystemAgentService } from '@/server/services/systemAgent';
 
 import { formatPrompt as formatPromptUtil } from './formatPrompt';
+import { getPlatformDescriptor } from './platforms';
 import {
   renderError,
   renderFinalReply,
@@ -507,8 +508,8 @@ export class AgentBridgeService {
                     totalTokens: finalState.usage?.llm?.tokens?.total ?? 0,
                   });
 
-                  // Telegram supports 4096 chars vs Discord's 2000
-                  const charLimit = platform === 'telegram' ? 4000 : undefined;
+                  const descriptor = platform ? getPlatformDescriptor(platform) : undefined;
+                  const charLimit = descriptor?.charLimit;
                   const chunks = splitMessage(finalText, charLimit);
 
                   if (progressMessage) {

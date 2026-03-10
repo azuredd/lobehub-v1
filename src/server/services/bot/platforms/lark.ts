@@ -1,7 +1,8 @@
+import { createLarkAdapter } from '@lobechat/adapter-lark';
 import debug from 'debug';
 
 import { LarkRestApi } from '../larkRestApi';
-import type { PlatformBot } from '../types';
+import type { PlatformBot, PlatformDescriptor } from '../types';
 
 const log = debug('lobe-server:bot:gateway:lark');
 
@@ -51,3 +52,48 @@ export class Lark implements PlatformBot {
     // No cleanup needed — webhook is managed in Lark Developer Console
   }
 }
+
+// --------------- Platform Descriptor ---------------
+
+function extractChatId(platformThreadId: string): string {
+  return platformThreadId.split(':')[1];
+}
+
+function createLarkDescriptorForPlatform(platform: 'lark' | 'feishu'): PlatformDescriptor {
+  return {
+    platform,
+    charLimit: 4000,
+    persistent: false,
+    handleDirectMessages: true,
+    requiredCredentials: ['appId', 'appSecret'],
+
+    extractChatId,
+    parseMessageId: (compositeId) => compositeId,
+
+    createMessenger(credentials, platformThreadId) {
+      const lark = new LarkRestApi(credentials.appId, credentials.appSecret, platform);
+      const chatId = extractChatId(platformThreadId);
+      return {
+        createMessage: (content) => lark.sendMessage(chatId, content).then(() => {}),
+        editMessage: (messageId, content) => lark.editMessage(messageId, content),
+        removeReaction: () => Promise.resolve(),
+        triggerTyping: () => Promise.resolve(),
+      };
+    },
+
+    createAdapter(credentials) {
+      return {
+        [platform]: createLarkAdapter({
+          appId: credentials.appId,
+          appSecret: credentials.appSecret,
+          encryptKey: credentials.encryptKey,
+          platform,
+          verificationToken: credentials.verificationToken,
+        }),
+      };
+    },
+  };
+}
+
+export const larkDescriptor = createLarkDescriptorForPlatform('lark');
+export const feishuDescriptor = createLarkDescriptorForPlatform('feishu');

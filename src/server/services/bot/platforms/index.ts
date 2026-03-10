@@ -1,7 +1,7 @@
-import type { PlatformBotClass } from '../types';
-import { Discord } from './discord';
-import { Lark } from './lark';
-import { Telegram } from './telegram';
+import type { PlatformBotClass, PlatformDescriptor } from '../types';
+import { Discord, discordDescriptor } from './discord';
+import { feishuDescriptor, Lark, larkDescriptor } from './lark';
+import { Telegram, telegramDescriptor } from './telegram';
 
 export const platformBotRegistry: Record<string, PlatformBotClass> = {
   discord: Discord,
@@ -9,3 +9,14 @@ export const platformBotRegistry: Record<string, PlatformBotClass> = {
   lark: Lark,
   telegram: Telegram,
 };
+
+export const platformDescriptors: Record<string, PlatformDescriptor> = {
+  discord: discordDescriptor,
+  feishu: feishuDescriptor,
+  lark: larkDescriptor,
+  telegram: telegramDescriptor,
+};
+
+export function getPlatformDescriptor(platform: string): PlatformDescriptor | undefined {
+  return platformDescriptors[platform];
+}
