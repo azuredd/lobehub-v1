@@ -3,6 +3,32 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { mockTrpcClient } = vi.hoisted(() => ({
   mockTrpcClient: {
+    agentEval: {
+      abortRun: { mutate: vi.fn() },
+      createBenchmark: { mutate: vi.fn() },
+      createDataset: { mutate: vi.fn() },
+      createRun: { mutate: vi.fn() },
+      createTestCase: { mutate: vi.fn() },
+      deleteBenchmark: { mutate: vi.fn() },
+      deleteDataset: { mutate: vi.fn() },
+      deleteRun: { mutate: vi.fn() },
+      deleteTestCase: { mutate: vi.fn() },
+      getBenchmark: { query: vi.fn() },
+      getDataset: { query: vi.fn() },
+      getRunDetails: { query: vi.fn() },
+      getRunProgress: { query: vi.fn() },
+      getRunResults: { query: vi.fn() },
+      getTestCase: { query: vi.fn() },
+      listBenchmarks: { query: vi.fn() },
+      listDatasets: { query: vi.fn() },
+      listRuns: { query: vi.fn() },
+      listTestCases: { query: vi.fn() },
+      retryRunErrors: { mutate: vi.fn() },
+      startRun: { mutate: vi.fn() },
+      updateBenchmark: { mutate: vi.fn() },
+      updateDataset: { mutate: vi.fn() },
+      updateTestCase: { mutate: vi.fn() },
+    },
     agentEvalExternal: {
       datasetGet: { query: vi.fn() },
       messagesList: { query: vi.fn() },
@@ -48,9 +74,11 @@ describe('eval command', () => {
     exitSpy = vi.spyOn(process, 'exit').mockImplementation((() => {}) as any);
     logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-    for (const method of Object.values(mockTrpcClient.agentEvalExternal)) {
-      for (const fn of Object.values(method)) {
-        (fn as ReturnType<typeof vi.fn>).mockReset();
+    for (const ns of Object.values(mockTrpcClient)) {
+      for (const method of Object.values(ns as Record<string, any>)) {
+        for (const fn of Object.values(method as Record<string, any>)) {
+          (fn as ReturnType<typeof vi.fn>).mockReset();
+        }
       }
     }
   });
@@ -76,7 +104,17 @@ describe('eval command', () => {
     });
 
     const program = createProgram();
-    await program.parseAsync(['node', 'test', 'eval', 'run', 'get', '--run-id', 'run-1', '--json']);
+    await program.parseAsync([
+      'node',
+      'test',
+      'eval',
+      'ext',
+      'run',
+      'get',
+      '--run-id',
+      'run-1',
+      '--json',
+    ]);
 
     expect(mockTrpcClient.agentEvalExternal.runGet.query).toHaveBeenCalledWith({ runId: 'run-1' });
 
@@ -104,6 +142,7 @@ describe('eval command', () => {
       'node',
       'test',
       'eval',
+      'ext',
       'dataset',
       'get',
       '--dataset-id',
@@ -124,6 +163,7 @@ describe('eval command', () => {
       'node',
       'test',
       'eval',
+      'ext',
       'run-topics',
       'list',
       '--run-id',
@@ -146,6 +186,7 @@ describe('eval command', () => {
       'node',
       'test',
       'eval',
+      'ext',
       'messages',
       'list',
       '--topic-id',
@@ -171,6 +212,7 @@ describe('eval command', () => {
       'node',
       'test',
       'eval',
+      'ext',
       'run-topic',
       'report-result',
       '--run-id',
@@ -210,6 +252,7 @@ describe('eval command', () => {
       'node',
       'test',
       'eval',
+      'ext',
       'run',
       'set-status',
       '--run-id',
@@ -236,6 +279,7 @@ describe('eval command', () => {
       'node',
       'test',
       'eval',
+      'ext',
       'run',
       'get',
       '--run-id',
@@ -261,6 +305,7 @@ describe('eval command', () => {
       'node',
       'test',
       'eval',
+      'ext',
       'test-cases',
       'count',
       '--dataset-id',
@@ -277,9 +322,259 @@ describe('eval command', () => {
     mockTrpcClient.agentEvalExternal.threadsList.query.mockRejectedValue(new Error('boom'));
 
     const program = createProgram();
-    await program.parseAsync(['node', 'test', 'eval', 'threads', 'list', '--topic-id', 'topic-1']);
+    await program.parseAsync([
+      'node',
+      'test',
+      'eval',
+      'ext',
+      'threads',
+      'list',
+      '--topic-id',
+      'topic-1',
+    ]);
 
     expect(log.error).toHaveBeenCalledWith('boom');
     expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+
+  // ============================================
+  // Internal Benchmark tests
+  // ============================================
+  describe('benchmark', () => {
+    it('should list benchmarks', async () => {
+      mockTrpcClient.agentEval.listBenchmarks.query.mockResolvedValue([
+        { id: 'b1', name: 'Bench 1' },
+      ]);
+
+      const program = createProgram();
+      await program.parseAsync(['node', 'test', 'eval', 'benchmark', 'list', '--json']);
+
+      expect(mockTrpcClient.agentEval.listBenchmarks.query).toHaveBeenCalled();
+    });
+
+    it('should create a benchmark', async () => {
+      mockTrpcClient.agentEval.createBenchmark.mutate.mockResolvedValue({ id: 'b1' });
+
+      const program = createProgram();
+      await program.parseAsync([
+        'node',
+        'test',
+        'eval',
+        'benchmark',
+        'create',
+        '--identifier',
+        'test-bench',
+        '-n',
+        'Test Bench',
+        '--json',
+      ]);
+
+      expect(mockTrpcClient.agentEval.createBenchmark.mutate).toHaveBeenCalledWith(
+        expect.objectContaining({ identifier: 'test-bench', name: 'Test Bench' }),
+      );
+    });
+
+    it('should delete a benchmark', async () => {
+      mockTrpcClient.agentEval.deleteBenchmark.mutate.mockResolvedValue({ success: true });
+
+      const program = createProgram();
+      await program.parseAsync(['node', 'test', 'eval', 'benchmark', 'delete', '--id', 'b1']);
+
+      expect(mockTrpcClient.agentEval.deleteBenchmark.mutate).toHaveBeenCalledWith({ id: 'b1' });
+    });
+  });
+
+  // ============================================
+  // Internal Dataset tests
+  // ============================================
+  describe('internal dataset', () => {
+    it('should list datasets', async () => {
+      mockTrpcClient.agentEval.listDatasets.query.mockResolvedValue([{ id: 'd1', name: 'DS 1' }]);
+
+      const program = createProgram();
+      await program.parseAsync(['node', 'test', 'eval', 'dataset', 'list', '--json']);
+
+      expect(mockTrpcClient.agentEval.listDatasets.query).toHaveBeenCalled();
+    });
+
+    it('should create a dataset', async () => {
+      mockTrpcClient.agentEval.createDataset.mutate.mockResolvedValue({ id: 'd1' });
+
+      const program = createProgram();
+      await program.parseAsync([
+        'node',
+        'test',
+        'eval',
+        'dataset',
+        'create',
+        '--benchmark-id',
+        'b1',
+        '--identifier',
+        'ds1',
+        '-n',
+        'Dataset 1',
+        '--json',
+      ]);
+
+      expect(mockTrpcClient.agentEval.createDataset.mutate).toHaveBeenCalledWith(
+        expect.objectContaining({ benchmarkId: 'b1', identifier: 'ds1', name: 'Dataset 1' }),
+      );
+    });
+  });
+
+  // ============================================
+  // Internal TestCase tests
+  // ============================================
+  describe('testcase', () => {
+    it('should list test cases', async () => {
+      mockTrpcClient.agentEval.listTestCases.query.mockResolvedValue({ data: [], total: 0 });
+
+      const program = createProgram();
+      await program.parseAsync([
+        'node',
+        'test',
+        'eval',
+        'testcase',
+        'list',
+        '--dataset-id',
+        'd1',
+        '--json',
+      ]);
+
+      expect(mockTrpcClient.agentEval.listTestCases.query).toHaveBeenCalledWith(
+        expect.objectContaining({ datasetId: 'd1' }),
+      );
+    });
+
+    it('should create a test case', async () => {
+      mockTrpcClient.agentEval.createTestCase.mutate.mockResolvedValue({ id: 'tc1' });
+
+      const program = createProgram();
+      await program.parseAsync([
+        'node',
+        'test',
+        'eval',
+        'testcase',
+        'create',
+        '--dataset-id',
+        'd1',
+        '--input',
+        'What is 2+2?',
+        '--expected',
+        '4',
+      ]);
+
+      expect(mockTrpcClient.agentEval.createTestCase.mutate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          content: expect.objectContaining({ expected: '4', input: 'What is 2+2?' }),
+          datasetId: 'd1',
+        }),
+      );
+    });
+
+    it('should delete a test case', async () => {
+      mockTrpcClient.agentEval.deleteTestCase.mutate.mockResolvedValue({ success: true });
+
+      const program = createProgram();
+      await program.parseAsync(['node', 'test', 'eval', 'testcase', 'delete', '--id', 'tc1']);
+
+      expect(mockTrpcClient.agentEval.deleteTestCase.mutate).toHaveBeenCalledWith({ id: 'tc1' });
+    });
+  });
+
+  // ============================================
+  // Internal Run tests
+  // ============================================
+  describe('irun', () => {
+    it('should list runs', async () => {
+      mockTrpcClient.agentEval.listRuns.query.mockResolvedValue({ data: [], total: 0 });
+
+      const program = createProgram();
+      await program.parseAsync(['node', 'test', 'eval', 'irun', 'list', '--json']);
+
+      expect(mockTrpcClient.agentEval.listRuns.query).toHaveBeenCalled();
+    });
+
+    it('should create a run', async () => {
+      mockTrpcClient.agentEval.createRun.mutate.mockResolvedValue({ id: 'r1' });
+
+      const program = createProgram();
+      await program.parseAsync([
+        'node',
+        'test',
+        'eval',
+        'irun',
+        'create',
+        '--dataset-id',
+        'd1',
+        '-n',
+        'Run 1',
+        '--json',
+      ]);
+
+      expect(mockTrpcClient.agentEval.createRun.mutate).toHaveBeenCalledWith(
+        expect.objectContaining({ datasetId: 'd1', name: 'Run 1' }),
+      );
+    });
+
+    it('should start a run', async () => {
+      mockTrpcClient.agentEval.startRun.mutate.mockResolvedValue({ success: true, runId: 'r1' });
+
+      const program = createProgram();
+      await program.parseAsync(['node', 'test', 'eval', 'irun', 'start', '--id', 'r1']);
+
+      expect(mockTrpcClient.agentEval.startRun.mutate).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'r1' }),
+      );
+    });
+
+    it('should abort a run', async () => {
+      mockTrpcClient.agentEval.abortRun.mutate.mockResolvedValue({ success: true });
+
+      const program = createProgram();
+      await program.parseAsync(['node', 'test', 'eval', 'irun', 'abort', '--id', 'r1']);
+
+      expect(mockTrpcClient.agentEval.abortRun.mutate).toHaveBeenCalledWith({ id: 'r1' });
+    });
+
+    it('should get run progress', async () => {
+      mockTrpcClient.agentEval.getRunProgress.query.mockResolvedValue({ status: 'running' });
+
+      const program = createProgram();
+      await program.parseAsync([
+        'node',
+        'test',
+        'eval',
+        'irun',
+        'progress',
+        '--id',
+        'r1',
+        '--json',
+      ]);
+
+      expect(mockTrpcClient.agentEval.getRunProgress.query).toHaveBeenCalledWith({ id: 'r1' });
+    });
+
+    it('should get run results', async () => {
+      mockTrpcClient.agentEval.getRunResults.query.mockResolvedValue({
+        results: [],
+        runId: 'r1',
+        total: 0,
+      });
+
+      const program = createProgram();
+      await program.parseAsync(['node', 'test', 'eval', 'irun', 'results', '--id', 'r1', '--json']);
+
+      expect(mockTrpcClient.agentEval.getRunResults.query).toHaveBeenCalledWith({ id: 'r1' });
+    });
+
+    it('should delete a run', async () => {
+      mockTrpcClient.agentEval.deleteRun.mutate.mockResolvedValue({ success: true });
+
+      const program = createProgram();
+      await program.parseAsync(['node', 'test', 'eval', 'irun', 'delete', '--id', 'r1']);
+
+      expect(mockTrpcClient.agentEval.deleteRun.mutate).toHaveBeenCalledWith({ id: 'r1' });
+    });
   });
 });

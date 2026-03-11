@@ -25,6 +25,7 @@ import { registerSearchCommand } from './commands/search';
 import { registerSessionGroupCommand } from './commands/session-group';
 import { registerSkillCommand } from './commands/skill';
 import { registerStatusCommand } from './commands/status';
+import { registerThreadCommand } from './commands/thread';
 import { registerTopicCommand } from './commands/topic';
 
 const require = createRequire(import.meta.url);
@@ -54,6 +55,7 @@ registerGenerateCommand(program);
 registerFileCommand(program);
 registerSkillCommand(program);
 registerSessionGroupCommand(program);
+registerThreadCommand(program);
 registerTopicCommand(program);
 registerMessageCommand(program);
 registerModelCommand(program);
