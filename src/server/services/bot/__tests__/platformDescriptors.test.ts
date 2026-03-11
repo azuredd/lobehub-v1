@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { getPlatformDescriptor, platformDescriptors } from '../platforms';
 import { discordDescriptor } from '../platforms/discord';
 import { feishuDescriptor, larkDescriptor } from '../platforms/lark';
+import { qqDescriptor } from '../platforms/qq';
 import { telegramDescriptor } from '../platforms/telegram';
 
 // Mock external dependencies before importing
@@ -51,10 +52,23 @@ vi.mock('../platforms/lark/restApi', () => ({
   })),
 }));
 
+vi.mock('@lobechat/adapter-qq', () => ({
+  createQQAdapter: vi.fn().mockReturnValue({ type: 'qq-adapter' }),
+}));
+
+vi.mock('../platforms/qq/restApi', () => ({
+  QQ_API_BASE: 'https://api.sgroup.qq.com',
+  QQRestApi: vi.fn().mockImplementation(() => ({
+    getAccessToken: vi.fn().mockResolvedValue('qq-token'),
+    sendAsEdit: vi.fn().mockResolvedValue({ id: 'qq-msg-edit' }),
+    sendMessage: vi.fn().mockResolvedValue({ id: 'qq-msg-1' }),
+  })),
+}));
+
 describe('platformDescriptors registry', () => {
-  it('should have all 4 platforms registered', () => {
+  it('should have all 5 platforms registered', () => {
     expect(Object.keys(platformDescriptors)).toEqual(
-      expect.arrayContaining(['discord', 'telegram', 'lark', 'feishu']),
+      expect.arrayContaining(['discord', 'telegram', 'lark', 'feishu', 'qq']),
     );
   });
 
@@ -63,6 +77,7 @@ describe('platformDescriptors registry', () => {
     expect(getPlatformDescriptor('telegram')).toBe(telegramDescriptor);
     expect(getPlatformDescriptor('lark')).toBe(larkDescriptor);
     expect(getPlatformDescriptor('feishu')).toBe(feishuDescriptor);
+    expect(getPlatformDescriptor('qq')).toBe(qqDescriptor);
   });
 
   it('getPlatformDescriptor should return undefined for unknown platforms', () => {
@@ -283,5 +298,69 @@ describe('feishuDescriptor', () => {
         expect.objectContaining({ platform: 'feishu' }),
       );
     });
+  });
+});
+
+describe('qqDescriptor', () => {
+  it('should have correct platform properties', () => {
+    expect(qqDescriptor.platform).toBe('qq');
+    expect(qqDescriptor.persistent).toBe(false);
+    expect(qqDescriptor.handleDirectMessages).toBe(true);
+    expect(qqDescriptor.charLimit).toBe(2000);
+    expect(qqDescriptor.requiredCredentials).toEqual(['appId', 'appSecret']);
+  });
+
+  describe('extractChatId', () => {
+    it('should extract target ID from qq thread ID', () => {
+      expect(qqDescriptor.extractChatId('qq:group:group-123')).toBe('group-123');
+    });
+
+    it('should extract target ID from c2c thread ID', () => {
+      expect(qqDescriptor.extractChatId('qq:c2c:user-456')).toBe('user-456');
+    });
+
+    it('should extract target ID from guild thread ID', () => {
+      expect(qqDescriptor.extractChatId('qq:guild:channel-789')).toBe('channel-789');
+    });
+  });
+
+  describe('parseMessageId', () => {
+    it('should return message ID as-is (string)', () => {
+      expect(qqDescriptor.parseMessageId('msg-abc-123')).toBe('msg-abc-123');
+    });
+  });
+
+  describe('createAdapter', () => {
+    it('should create QQ adapter with correct params', () => {
+      const credentials = { appId: 'app-123', appSecret: 'secret-456' };
+      const result = qqDescriptor.createAdapter(credentials, 'app-id');
+
+      expect(result).toHaveProperty('qq');
+    });
+  });
+
+  describe('createMessenger', () => {
+    it('should create a messenger with all required methods', () => {
+      const credentials = { appId: 'app-123', appSecret: 'secret-456' };
+      const messenger = qqDescriptor.createMessenger(credentials, 'qq:group:group-123');
+
+      expect(messenger).toHaveProperty('createMessage');
+      expect(messenger).toHaveProperty('editMessage');
+      expect(messenger).toHaveProperty('removeReaction');
+      expect(messenger).toHaveProperty('triggerTyping');
+    });
+
+    it('should have no-op reaction and typing', async () => {
+      const credentials = { appId: 'app-123', appSecret: 'secret-456' };
+      const messenger = qqDescriptor.createMessenger(credentials, 'qq:group:group-123');
+
+      // QQ has no reaction/typing API
+      await expect(messenger.removeReaction('msg-1', '👀')).resolves.toBeUndefined();
+      await expect(messenger.triggerTyping()).resolves.toBeUndefined();
+    });
+  });
+
+  it('should not define onBotRegistered', () => {
+    expect(qqDescriptor.onBotRegistered).toBeUndefined();
   });
 });
