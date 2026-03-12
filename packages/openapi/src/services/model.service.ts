@@ -15,8 +15,8 @@ import type {
 } from '../types/model.type';
 
 /**
- * 模型服务实现类 (Hono API 专用)
- * 提供模型的查询和分组功能
+ * Model service implementation class (Hono API only)
+ * Provides model query and grouping functionality
  */
 export class ModelService extends BaseService {
   constructor(db: LobeChatDatabase, userId: string | null) {
@@ -24,8 +24,8 @@ export class ModelService extends BaseService {
   }
 
   /**
-   * 获取模型列表
-   * @param request 查询请求参数
+   * Get model list
+   * @param request Query request parameters
    */
   async getModels(request: ModelsListQuery = {}): ServiceResult<GetModelsResponse> {
     this.log('info', '获取模型列表', {
@@ -34,25 +34,25 @@ export class ModelService extends BaseService {
     });
 
     try {
-      // 权限校验
+      // Permission check
       const permissionResult = await this.resolveOperationPermission('AI_MODEL_READ');
 
       if (!permissionResult.isPermitted) {
         throw this.createAuthorizationError(permissionResult.message || '无权访问模型列表');
       }
 
-      // 构建查询条件
+      // Build query conditions
       const conditions = [];
 
-      // 权限条件直接加入主条件数组
+      // Permission conditions are added directly to the main conditions array
       if (permissionResult.condition?.userId) {
         conditions.push(eq(aiModels.userId, permissionResult.condition.userId));
       }
 
-      // 处理 ModelsListQuery 特定参数
+      // Handle ModelsListQuery specific parameters
       const { page, pageSize, keyword, provider, type, enabled } = request;
 
-      // 如果提供了关键词，添加到查询条件中
+      // If a keyword is provided, add it to the query conditions
       if (keyword) {
         conditions.push(
           or(
@@ -77,10 +77,10 @@ export class ModelService extends BaseService {
 
       const finalWhereCondition = conditions.length > 0 ? and(...conditions) : undefined;
 
-      // 计算偏移量
+      // Calculate offset
       const { limit, offset } = processPaginationConditions({ page, pageSize });
 
-      // 并行执行查询和计数
+      // Execute query and count in parallel
       const [result, totalResult] = await Promise.all([
         this.db.query.aiModels.findMany({
           limit,
