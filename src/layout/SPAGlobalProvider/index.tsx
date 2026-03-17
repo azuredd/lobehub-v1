@@ -8,6 +8,7 @@ import { lazy, memo, type PropsWithChildren, Suspense, useLayoutEffect } from 'r
 import { LobeAnalyticsProviderWrapper } from '@/components/Analytics/LobeAnalyticsProviderWrapper';
 import { DragUploadProvider } from '@/components/DragUploadZone/DragUploadProvider';
 import { isDesktop } from '@/const/version';
+import { useSyncDataBroadcast } from '@/hooks/useSyncDataBroadcast';
 import AuthProvider from '@/layout/AuthProvider';
 import AppTheme from '@/layout/GlobalProvider/AppTheme';
 import { FaviconProvider } from '@/layout/GlobalProvider/FaviconProvider';
@@ -32,6 +33,8 @@ const SPAGlobalProvider = memo<PropsWithChildren>(({ children }) => {
   useLayoutEffect(() => {
     document.getElementById('loading-screen')?.remove();
   }, []);
+
+  useSyncDataBroadcast();
 
   const serverConfig: SPAServerConfig | undefined = window.__SERVER_CONFIG__;
 

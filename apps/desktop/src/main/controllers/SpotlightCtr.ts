@@ -147,6 +147,14 @@ export default class SpotlightCtr extends ControllerModule {
     this.hideSpotlight();
   }
 
+  @IpcMethod()
+  async notifySync(params: { keys: string[] }) {
+    this.app.browserManager.broadcastToOtherWindows('syncData', {
+      keys: params.keys,
+      source: 'spotlight',
+    });
+  }
+
   private hideSpotlight() {
     const spotlight = this.app.browserManager.browsers.get(BrowsersIdentifiers.spotlight);
     if (spotlight) {
