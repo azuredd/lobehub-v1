@@ -2,6 +2,7 @@ import {
   type ChatMessageError,
   type ChatMessagePluginError,
   type ChatToolPayload,
+  type MessageMetadata,
   type MessagePluginItem,
 } from '@lobechat/types';
 import isEqual from 'fast-deep-equal';
@@ -24,7 +25,7 @@ export interface UpdateToolMessageParams {
    * Metadata to attach to the tool message
    * Used to mark messages for special handling (e.g., agentCouncil for parallel display)
    */
-  metadata?: Record<string, unknown>;
+  metadata?: MessageMetadata;
   pluginError?: ChatMessagePluginError | null;
   pluginState?: Record<string, unknown>;
 }

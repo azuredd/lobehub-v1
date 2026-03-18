@@ -5,6 +5,7 @@ import type { UploadFileItem } from '../../files';
 import type { MessageSemanticSearchChunk } from '../../rag';
 import type { ChatMessageError } from '../common/base';
 import { ChatMessageErrorSchema } from '../common/base';
+import type { MessageMetadata } from '../common/metadata';
 // Import for local use
 import type { PageSelection } from '../common/pageSelection';
 import type { ChatPluginPayload } from '../common/tools';
@@ -127,7 +128,7 @@ export interface SendMessageParams {
   /**
    * Additional metadata for the message (e.g., mentioned users)
    */
-  metadata?: Record<string, unknown>;
+  metadata?: MessageMetadata;
 
   onlyAddUserMessage?: boolean;
   /**
@@ -149,7 +150,7 @@ export interface SendGroupMessageParams {
   /**
    * Additional metadata for the message (e.g., mentioned users)
    */
-  metadata?: Record<string, unknown>;
+  metadata?: MessageMetadata;
   /**
    * for group chat
    */

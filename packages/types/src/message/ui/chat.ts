@@ -60,7 +60,7 @@ export interface AssistantContentBlock {
   fileList?: ChatFileItem[];
   id: string;
   imageList?: ChatImageItem[];
-  metadata?: Record<string, unknown>;
+  metadata?: MessageMetadata;
   performance?: ModelPerformance;
   reasoning?: ModelReasoning;
   tools?: ChatToolPayloadWithResult[];

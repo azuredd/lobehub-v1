@@ -179,7 +179,7 @@ export class MessageService {
     id: string,
     value: {
       content?: string;
-      metadata?: Record<string, unknown>;
+      metadata?: MessageMetadata;
       pluginError?: ChatMessagePluginError | null;
       pluginState?: Record<string, unknown>;
     },

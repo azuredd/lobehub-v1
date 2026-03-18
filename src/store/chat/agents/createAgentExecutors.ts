@@ -30,6 +30,7 @@ import {
   type ModelUsage,
   TraceNameMap,
 } from '@lobechat/types';
+import type { MessageMetadata } from '@lobechat/types';
 import { dedupeBy } from '@lobechat/utils';
 import debug from 'debug';
 import pMap from 'p-map';
@@ -180,7 +181,7 @@ export const createAgentExecutors = (context: {
         }
 
         // Build metadata
-        const metadata: Record<string, unknown> = {};
+        const metadata: Partial<MessageMetadata> = {};
         if (opContext.isSupervisor) {
           metadata.isSupervisor = true;
         }
