@@ -12,6 +12,7 @@ import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RepoIcon from '@/components/LibIcon';
+import { useKnowledgeBaseListContext } from '@/features/ResourceManager/components/KnowledgeBaseListProvider';
 import { useResourceManagerStore } from '@/routes/(main)/resource/features/store';
 import { useKnowledgeBaseStore } from '@/store/library';
 
@@ -39,11 +40,8 @@ const BatchActionsDropdown = memo<BatchActionsDropdownProps>(({ selectCount, onA
     s.resolveSelectedResourceIds,
     s.selectAllState,
   ]);
-  const [useFetchKnowledgeBaseList, addFilesToKnowledgeBase] = useKnowledgeBaseStore((s) => [
-    s.useFetchKnowledgeBaseList,
-    s.addFilesToKnowledgeBase,
-  ]);
-  const { data: knowledgeBases } = useFetchKnowledgeBaseList();
+  const addFilesToKnowledgeBase = useKnowledgeBaseStore((s) => s.addFilesToKnowledgeBase);
+  const knowledgeBases = useKnowledgeBaseListContext();
 
   const menuItems = useMemo<DropdownItem[]>(() => {
     const items: DropdownItem[] = [];
@@ -71,7 +69,7 @@ const BatchActionsDropdown = memo<BatchActionsDropdownProps>(({ selectCount, onA
     }
 
     // Filter out current knowledge base and create submenu items
-    const availableKnowledgeBases = (knowledgeBases || []).filter((kb) => kb.id !== libraryId);
+    const availableKnowledgeBases = knowledgeBases.filter((kb) => kb.id !== libraryId);
 
     const addToKnowledgeBaseSubmenu: DropdownItem[] = availableKnowledgeBases.map((kb) => ({
       disabled: selectCount === 0,

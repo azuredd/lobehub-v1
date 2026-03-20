@@ -9,6 +9,7 @@ import { useResourceManagerStore } from '@/routes/(main)/resource/features/store
 import { sortFileList } from '@/routes/(main)/resource/features/store/selectors';
 import { useFetchResources, useResourceStore } from '@/store/file/slices/resource/hooks';
 
+import { KnowledgeBaseListProvider } from '../KnowledgeBaseListProvider';
 import EmptyPlaceholder from './EmptyPlaceholder';
 import Header from './Header';
 import ListView from './ListView';
@@ -94,19 +95,25 @@ const ResourceExplorer = memo(() => {
   const showEmptyStatus = !isLoading && !isValidating && data?.length === 0 && !currentFolderSlug;
 
   return (
-    <Flexbox height={'100%'}>
-      <Header />
-      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
-        {showEmptyStatus ? (
-          <EmptyPlaceholder />
-        ) : viewMode === 'list' ? (
-          <ListView />
-        ) : (
-          <MasonryView />
-        )}
-        <SearchResultsOverlay />
-      </div>
-    </Flexbox>
+    <KnowledgeBaseListProvider>
+      <Flexbox height={'100%'}>
+        <Header />
+        <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+          {showEmptyStatus ? (
+            <EmptyPlaceholder />
+          ) : viewMode === 'list' ? (
+            <ListView isLoading={isLoading} isValidating={isValidating} queryParams={queryParams} />
+          ) : (
+            <MasonryView
+              isLoading={isLoading}
+              isValidating={isValidating}
+              queryParams={queryParams}
+            />
+          )}
+          <SearchResultsOverlay />
+        </div>
+      </Flexbox>
+    </KnowledgeBaseListProvider>
   );
 });
 

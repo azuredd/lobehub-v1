@@ -4,6 +4,8 @@ import { Flexbox } from '@lobehub/ui';
 import { useRef } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
 
+import type { ResourceQueryParams } from '@/types/resource';
+
 import ListViewDropZone from './ListViewDropZone';
 import ListViewHeader from './ListViewHeader';
 import ListViewSkeleton from './Skeleton';
@@ -11,9 +13,19 @@ import { styles } from './styles';
 import { useExplorerListData } from './useExplorerListData';
 import VirtualizedFileList from './VirtualizedFileList';
 
-const ListView = () => {
+interface ListViewProps {
+  isLoading?: boolean;
+  isValidating?: boolean;
+  queryParams: ResourceQueryParams;
+}
+
+const ListView = ({ isLoading, isValidating, queryParams }: ListViewProps) => {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
-  const { columnWidths, currentFolderId, data, hasMore, showSkeleton } = useExplorerListData();
+  const { columnWidths, currentFolderId, data, hasMore, showSkeleton } = useExplorerListData({
+    isLoading,
+    isValidating,
+    queryParams,
+  });
 
   if (showSkeleton) return <ListViewSkeleton columnWidths={columnWidths} />;
 

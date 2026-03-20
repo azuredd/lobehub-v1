@@ -10,8 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { useResourceManagerStore } from '@/routes/(main)/resource/features/store';
 import { sortFileList } from '@/routes/(main)/resource/features/store/selectors';
 import { useFileStore } from '@/store/file';
-import { useFetchResources } from '@/store/file/slices/resource/hooks';
 import { type FileListItem } from '@/types/files';
+import type { ResourceQueryParams } from '@/types/resource';
 
 import {
   useExplorerSelectionActions,
@@ -50,17 +50,20 @@ const styles = createStaticStyles(({ css }) => ({
   `,
 }));
 
-const MasonryView = memo(function MasonryView() {
+interface MasonryViewProps {
+  isLoading?: boolean;
+  isValidating?: boolean;
+  queryParams: ResourceQueryParams;
+}
+
+const MasonryView = memo(function MasonryView({
+  isLoading,
+  isValidating,
+  queryParams,
+}: MasonryViewProps) {
   // Access all state from Resource Manager store
-  const [
-    libraryId,
-    category,
-    viewMode,
-    sorter,
-    sortType,
-  ] = useResourceManagerStore((s) => [
+  const [libraryId, viewMode, sorter, sortType] = useResourceManagerStore((s) => [
     s.libraryId,
-    s.category,
     s.viewMode,
     s.sorter,
     s.sortType,
@@ -74,19 +77,6 @@ const MasonryView = memo(function MasonryView() {
   const resourceList = useFileStore((s) => s.resourceList);
   const total = useFileStore((s) => s.total);
 
-  const queryParams = useMemo(
-    () => ({
-      category: libraryId ? undefined : category,
-      libraryId,
-      parentId: null,
-      showFilesInKnowledgeBase: false,
-      sortType,
-      sorter,
-    }),
-    [category, libraryId, sorter, sortType],
-  );
-
-  const { isLoading, isValidating } = useFetchResources(queryParams);
   const { queryParams: currentQueryParams, hasMore, loadMoreResources } = useFileStore();
 
   const isNavigating = useMemo(() => {
