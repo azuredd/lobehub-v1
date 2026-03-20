@@ -8,6 +8,8 @@
  * because the activated state is persisted in message pluginState and accumulated
  * by selectActivatedToolIdsFromMessages at each agentic loop step.
  */
+import { builtinSkills } from '@lobechat/builtin-skills';
+import { SkillsExecutionRuntime } from '@lobechat/builtin-tool-skills/executionRuntime';
 import {
   type ToolManifestInfo,
   ToolsActivatorExecutionRuntime,
@@ -15,10 +17,23 @@ import {
 } from '@lobechat/builtin-tool-tools/executionRuntime';
 import { ToolsActivatorExecutor } from '@lobechat/builtin-tool-tools/executor';
 
+import { filterBuiltinSkills } from '@/helpers/skillFilters';
+import { agentSkillService } from '@/services/skill';
 import { getToolStoreState } from '@/store/tool';
 import { toolSelectors } from '@/store/tool/selectors/tool';
 
+const skillsRuntime = new SkillsExecutionRuntime({
+  builtinSkills: filterBuiltinSkills(builtinSkills),
+  service: {
+    findAll: () => agentSkillService.list(),
+    findById: (id) => agentSkillService.getById(id),
+    findByName: (name) => agentSkillService.getByName(name),
+    readResource: (id, path) => agentSkillService.readResource(id, path),
+  },
+});
+
 const service: ToolsActivatorRuntimeService = {
+  activateSkill: (args) => skillsRuntime.activateSkill(args),
   getActivatedToolIds: () => [],
   getToolManifests: async (identifiers: string[]): Promise<ToolManifestInfo[]> => {
     const s = getToolStoreState();

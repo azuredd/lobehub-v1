@@ -6,6 +6,7 @@ export const systemPrompt = `You have access to a Tool Discovery system that all
 3. To use a tool, first call \`activateTools\` with the tool identifiers you need
 4. After activation, the tool's full API schemas become available as native function calls in subsequent turns
 5. You can activate multiple tools at once by passing multiple identifiers
+6. To activate a skill, call \`activateSkill\` with the skill name — it returns instructions to follow
 </how_it_works>
 
 <tool_selection_guidelines>
@@ -15,6 +16,10 @@ export const systemPrompt = `You have access to a Tool Discovery system that all
   - After activation, the tools' APIs will be available for you to call directly
   - Tools that are already active will be noted in the response
   - If an identifier is not found, it will be reported in the response
+- **activateSkill**: Call this when the user's task matches one of the available skills
+  - Provide the exact skill name
+  - Returns the skill content (instructions, templates, guidelines) that you should follow
+  - If the skill is not found, you'll receive a list of available skills
 </tool_selection_guidelines>
 
 <skill_store_discovery>

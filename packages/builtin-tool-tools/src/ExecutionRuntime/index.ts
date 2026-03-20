@@ -1,6 +1,6 @@
 import type { BuiltinServerRuntimeOutput } from '@lobechat/types';
 
-import type { ActivatedToolInfo, ActivateToolsParams } from '../types';
+import type { ActivatedToolInfo, ActivateSkillParams, ActivateToolsParams } from '../types';
 
 export interface ToolManifestInfo {
   apiDescriptions: Array<{ description: string; name: string }>;
@@ -11,6 +11,7 @@ export interface ToolManifestInfo {
 }
 
 export interface ToolsActivatorRuntimeService {
+  activateSkill?: (args: ActivateSkillParams) => Promise<BuiltinServerRuntimeOutput>;
   getActivatedToolIds: () => string[];
   getToolManifests: (identifiers: string[]) => Promise<ToolManifestInfo[]>;
   markActivated: (identifiers: string[]) => void;
@@ -25,6 +26,17 @@ export class ToolsActivatorExecutionRuntime {
 
   constructor(options: ToolsActivatorExecutionRuntimeOptions) {
     this.service = options.service;
+  }
+
+  async activateSkill(args: ActivateSkillParams): Promise<BuiltinServerRuntimeOutput> {
+    if (!this.service.activateSkill) {
+      return {
+        content: 'Skill activation is not available.',
+        success: false,
+      };
+    }
+
+    return this.service.activateSkill(args);
   }
 
   async activateTools(args: ActivateToolsParams): Promise<BuiltinServerRuntimeOutput> {

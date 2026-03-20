@@ -21,6 +21,7 @@ import { MemoryManifest, MemoryRenders } from '@lobechat/builtin-tool-memory/cli
 import { NotebookManifest, NotebookRenders } from '@lobechat/builtin-tool-notebook/client';
 import { SkillStoreManifest, SkillStoreRenders } from '@lobechat/builtin-tool-skill-store/client';
 import { SkillsManifest, SkillsRenders } from '@lobechat/builtin-tool-skills/client';
+import { LobeToolsManifest, LobeToolsRenders } from '@lobechat/builtin-tool-tools/client';
 import {
   WebBrowsingManifest,
   WebBrowsingRenders,
@@ -44,6 +45,7 @@ const BuiltinToolsRenders: Record<string, Record<string, BuiltinRender>> = {
   [NotebookManifest.identifier]: NotebookRenders as Record<string, BuiltinRender>,
   [SkillStoreManifest.identifier]: SkillStoreRenders as Record<string, BuiltinRender>,
   [SkillsManifest.identifier]: SkillsRenders as Record<string, BuiltinRender>,
+  [LobeToolsManifest.identifier]: LobeToolsRenders as Record<string, BuiltinRender>,
   [WebBrowsingManifest.identifier]: WebBrowsingRenders as Record<string, BuiltinRender>,
 };
 

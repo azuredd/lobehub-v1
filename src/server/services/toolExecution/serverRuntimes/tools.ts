@@ -1,9 +1,14 @@
+import { builtinSkills } from '@lobechat/builtin-skills';
+import { SkillsExecutionRuntime } from '@lobechat/builtin-tool-skills/executionRuntime';
 import { LobeToolIdentifier } from '@lobechat/builtin-tool-tools';
 import {
   type ToolManifestInfo,
   ToolsActivatorExecutionRuntime,
   type ToolsActivatorRuntimeService,
 } from '@lobechat/builtin-tool-tools/executionRuntime';
+
+import { AgentSkillModel } from '@/database/models/agentSkill';
+import { filterBuiltinSkills } from '@/helpers/skillFilters';
 
 import { type ServerRuntimeRegistration } from './types';
 
@@ -12,10 +17,28 @@ import { type ServerRuntimeRegistration } from './types';
  * Resolves tool manifests from context.toolManifestMap (populated by the agent state).
  */
 export const toolsActivatorRuntime: ServerRuntimeRegistration = {
-  factory: (context) => {
+  factory: async (context) => {
     const activatedIds: string[] = [];
 
+    // Create SkillsExecutionRuntime for activateSkill delegation
+    let skillsRuntime: SkillsExecutionRuntime | undefined;
+    if (context.serverDB && context.userId) {
+      const skillModel = new AgentSkillModel(context.serverDB, context.userId);
+      skillsRuntime = new SkillsExecutionRuntime({
+        builtinSkills: filterBuiltinSkills(builtinSkills),
+        service: {
+          findAll: () => skillModel.findAll(),
+          findById: (id) => skillModel.findById(id),
+          findByName: (name) => skillModel.findByName(name),
+          readResource: async () => {
+            throw new Error('readResource not available in tools runtime');
+          },
+        },
+      });
+    }
+
     const service: ToolsActivatorRuntimeService = {
+      activateSkill: skillsRuntime ? (args) => skillsRuntime!.activateSkill(args) : undefined,
       getActivatedToolIds: () => [...activatedIds],
       getToolManifests: async (identifiers: string[]): Promise<ToolManifestInfo[]> => {
         // Note: context.toolManifestMap should only contain discoverable tools.

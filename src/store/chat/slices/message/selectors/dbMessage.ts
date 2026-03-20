@@ -209,7 +209,8 @@ export const selectActivatedSkillsFromMessages = (
   for (const msg of messages) {
     if (
       msg.role === 'tool' &&
-      msg.plugin?.identifier === SkillsIdentifier &&
+      (msg.plugin?.identifier === SkillsIdentifier ||
+        msg.plugin?.identifier === LobeToolIdentifier) &&
       msg.plugin?.apiName === 'activateSkill' &&
       msg.pluginState?.id &&
       msg.pluginState?.name

@@ -1298,10 +1298,10 @@ describe('ToolsEngine', () => {
         excludeDefaultToolIds: manualModeExcludeToolIds,
       });
 
-      // lobe-tools and lobe-skill-store should be excluded from defaults in manual mode
+      // Discovery tools should be excluded from defaults in manual mode
       expect(result.enabledToolIds).not.toContain('lobe-tools');
       expect(result.enabledToolIds).not.toContain('lobe-skill-store');
-      // Other default tools should still be available
+      // Execution tools and other defaults should still be available
       expect(result.enabledToolIds).toContain('lobe-skills');
       expect(result.enabledToolIds).toContain('lobe-web-browsing');
       expect(result.enabledToolIds).toContain('lobe-cloud-sandbox');

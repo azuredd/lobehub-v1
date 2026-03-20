@@ -1,4 +1,4 @@
-import { SkillsApiName, SkillsIdentifier } from '@lobechat/builtin-tool-skills';
+import { LobeToolIdentifier, ToolsActivatorApiName } from '@lobechat/builtin-tool-tools';
 import { resourcesTreePrompt } from '@lobechat/prompts';
 import type { RuntimeSelectedSkill, SendPreloadMessage } from '@lobechat/types';
 import { nanoid } from '@lobechat/utils';
@@ -120,10 +120,10 @@ const buildPersistedPreloadMessages = (skills: PreloadedSkill[]): SendPreloadMes
         role: 'assistant',
         tools: [
           {
-            apiName: SkillsApiName.activateSkill,
+            apiName: ToolsActivatorApiName.activateSkill,
             arguments: args,
             id: toolCallId,
-            identifier: SkillsIdentifier,
+            identifier: LobeToolIdentifier,
             type: 'builtin',
           },
         ],
@@ -131,9 +131,9 @@ const buildPersistedPreloadMessages = (skills: PreloadedSkill[]): SendPreloadMes
       {
         content: skill.content,
         plugin: {
-          apiName: SkillsApiName.activateSkill,
+          apiName: ToolsActivatorApiName.activateSkill,
           arguments: args,
-          identifier: SkillsIdentifier,
+          identifier: LobeToolIdentifier,
           type: 'builtin',
         },
         role: 'tool',
