@@ -11,7 +11,7 @@ interface UseFileListItemRenameOptions {
   isPendingRename?: boolean;
   libraryId?: string;
   name?: string | null;
-  refreshFileList: () => Promise<void>;
+  refreshFileList: (options?: { revalidateResources?: boolean }) => Promise<void>;
   setPendingRenameItemId: (id: string | null) => void;
   updateResource: (id: string, payload: { name: string }) => Promise<unknown>;
 }
@@ -64,7 +64,7 @@ export const useFileListItemRename = ({
       if (libraryId) {
         await clearTreeFolderCache(libraryId);
       }
-      await refreshFileList();
+      await refreshFileList({ revalidateResources: false });
 
       message.success(t('FileManager.actions.renameSuccess'));
       setIsRenaming(false);

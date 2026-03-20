@@ -319,7 +319,7 @@ export const useFileItemDropdown = ({
                 if (libraryId) {
                   await clearTreeFolderCache(libraryId);
                 }
-                await refreshFileList();
+                await refreshFileList({ revalidateResources: false });
 
                 message.success(t('FileManager.actions.deleteSuccess'));
               },
@@ -330,7 +330,7 @@ export const useFileItemDropdown = ({
     ).filter(Boolean);
   }, [
     addFilesToKnowledgeBase,
-    clearTreeFolderCache,
+    appOrigin,
     deleteResource,
     filename,
     id,

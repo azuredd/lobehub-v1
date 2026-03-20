@@ -53,21 +53,15 @@ const AddButton = () => {
   // Keep old functions temporarily for components not yet migrated
   const createDocument = useFileStore((s) => s.createDocument);
 
-  const [
-    libraryId,
-    category,
-    setCategory,
-    setCurrentViewItemId,
-    setMode,
-    setPendingRenameItemId,
-  ] = useResourceManagerStore((s) => [
-    s.libraryId,
-    s.category,
-    s.setCategory,
-    s.setCurrentViewItemId,
-    s.setMode,
-    s.setPendingRenameItemId,
-  ]);
+  const [libraryId, category, setCategory, setCurrentViewItemId, setMode, setPendingRenameItemId] =
+    useResourceManagerStore((s) => [
+      s.libraryId,
+      s.category,
+      s.setCategory,
+      s.setCurrentViewItemId,
+      s.setMode,
+      s.setPendingRenameItemId,
+    ]);
 
   const handleOpenPageEditor = useCallback(async () => {
     // Navigate to "All" category first if not already there
@@ -167,10 +161,6 @@ const AddButton = () => {
     createDocument,
     currentFolderId,
     libraryId,
-    refetchResources: async () => {
-      const { revalidateResources } = await import('@/store/file/slices/resource/hooks');
-      await revalidateResources();
-    },
     t,
   });
 

@@ -57,10 +57,9 @@ export class ResourceManagerStoreActionImpl {
       case 'delete': {
         if (selectAllState === 'all' && fileStore.queryParams) {
           const { resourceService } = await import('@/services/resource');
-          const { revalidateResources } = await import('@/store/file/slices/resource/hooks');
 
           await resourceService.deleteResourcesByQuery(fileStore.queryParams as any);
-          await revalidateResources(fileStore.queryParams);
+          fileStore.clearCurrentQueryResources();
 
           this.#set({ selectAllState: 'none', selectedFileIds: [] });
           return;

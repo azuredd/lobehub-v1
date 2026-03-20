@@ -1,4 +1,4 @@
-import { type FileListItem } from '@/types/files';
+import { type FileListItem, type KnowledgeItemStatus } from '@/types/files';
 import {
   type CreateResourceParams,
   type ResourceItem,
@@ -55,6 +55,29 @@ const mapToResourceItem = (item: FileListItem): ResourceItem => {
 
     // File-specific fields
     url: item.url,
+  };
+};
+
+type ResourceStatusItem = Pick<
+  ResourceItem,
+  | 'chunkCount'
+  | 'chunkingError'
+  | 'chunkingStatus'
+  | 'embeddingError'
+  | 'embeddingStatus'
+  | 'finishEmbedding'
+  | 'id'
+>;
+
+const mapStatusToResourceItem = (item: KnowledgeItemStatus): ResourceStatusItem => {
+  return {
+    chunkCount: item.chunkCount,
+    chunkingError: item.chunkingError,
+    chunkingStatus: item.chunkingStatus,
+    embeddingError: item.embeddingError,
+    embeddingStatus: item.embeddingStatus,
+    finishEmbedding: item.finishEmbedding,
+    id: item.id,
   };
 };
 
@@ -117,6 +140,15 @@ export class ResourceService {
   async getResource(id: string): Promise<ResourceItem | undefined> {
     const item = await fileService.getKnowledgeItem(id);
     return item ? mapToResourceItem(item) : undefined;
+  }
+
+  async getKnowledgeItemStatusesByIds(ids: string[]): Promise<ResourceStatusItem[]> {
+    const items = await fileService.getKnowledgeItemStatusesByIds(ids);
+    return items.map(mapStatusToResourceItem);
+  }
+
+  async getResourceStatusesByIds(ids: string[]): Promise<ResourceStatusItem[]> {
+    return this.getKnowledgeItemStatusesByIds(ids);
   }
 
   /**

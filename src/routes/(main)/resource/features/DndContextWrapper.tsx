@@ -150,10 +150,6 @@ export const DndContextWrapper = memo<PropsWithChildren>(({ children }) => {
 
         await Promise.all(pools);
 
-        // Refetch resources to update the view (items should disappear from current folder)
-        const { revalidateResources } = await import('@/store/file/slices/resource/hooks');
-        await revalidateResources();
-
         // Clear and reload all expanded folders in Tree's module-level cache
         if (libraryId) {
           await clearTreeFolderCache(libraryId);
