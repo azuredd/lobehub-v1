@@ -1,7 +1,7 @@
 /**
  * Lobe Tools Executor
  *
- * Creates and exports the ToolsActivatorExecutor instance for registration.
+ * Creates and exports the ActivatorExecutor instance for registration.
  * Resolves tool manifests from the tool store (installedPlugins + builtinTools).
  *
  * State tracking (getActivatedToolIds / markActivated) is intentionally a no-op
@@ -9,13 +9,13 @@
  * by selectActivatedToolIdsFromMessages at each agentic loop step.
  */
 import { builtinSkills } from '@lobechat/builtin-skills';
-import { SkillsExecutionRuntime } from '@lobechat/builtin-tool-skills/executionRuntime';
 import {
+  ActivatorExecutionRuntime,
+  type ActivatorRuntimeService,
   type ToolManifestInfo,
-  ToolsActivatorExecutionRuntime,
-  type ToolsActivatorRuntimeService,
-} from '@lobechat/builtin-tool-tools/executionRuntime';
-import { ToolsActivatorExecutor } from '@lobechat/builtin-tool-tools/executor';
+} from '@lobechat/builtin-tool-activator/executionRuntime';
+import { ActivatorExecutor } from '@lobechat/builtin-tool-activator/executor';
+import { SkillsExecutionRuntime } from '@lobechat/builtin-tool-skills/executionRuntime';
 
 import { filterBuiltinSkills } from '@/helpers/skillFilters';
 import { agentSkillService } from '@/services/skill';
@@ -32,7 +32,7 @@ const skillsRuntime = new SkillsExecutionRuntime({
   },
 });
 
-const service: ToolsActivatorRuntimeService = {
+const service: ActivatorRuntimeService = {
   activateSkill: (args) => skillsRuntime.activateSkill(args),
   getActivatedToolIds: () => [],
   getToolManifests: async (identifiers: string[]): Promise<ToolManifestInfo[]> => {
@@ -85,6 +85,6 @@ const service: ToolsActivatorRuntimeService = {
   markActivated: () => {},
 };
 
-const runtime = new ToolsActivatorExecutionRuntime({ service });
+const runtime = new ActivatorExecutionRuntime({ service });
 
-export const toolsActivatorExecutor = new ToolsActivatorExecutor(runtime);
+export const activatorExecutor = new ActivatorExecutor(runtime);

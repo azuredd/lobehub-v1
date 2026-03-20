@@ -10,21 +10,21 @@ export interface ToolManifestInfo {
   systemRole?: string;
 }
 
-export interface ToolsActivatorRuntimeService {
+export interface ActivatorRuntimeService {
   activateSkill?: (args: ActivateSkillParams) => Promise<BuiltinServerRuntimeOutput>;
   getActivatedToolIds: () => string[];
   getToolManifests: (identifiers: string[]) => Promise<ToolManifestInfo[]>;
   markActivated: (identifiers: string[]) => void;
 }
 
-export interface ToolsActivatorExecutionRuntimeOptions {
-  service: ToolsActivatorRuntimeService;
+export interface ActivatorExecutionRuntimeOptions {
+  service: ActivatorRuntimeService;
 }
 
-export class ToolsActivatorExecutionRuntime {
-  private service: ToolsActivatorRuntimeService;
+export class ActivatorExecutionRuntime {
+  private service: ActivatorRuntimeService;
 
-  constructor(options: ToolsActivatorExecutionRuntimeOptions) {
+  constructor(options: ActivatorExecutionRuntimeOptions) {
     this.service = options.service;
   }
 

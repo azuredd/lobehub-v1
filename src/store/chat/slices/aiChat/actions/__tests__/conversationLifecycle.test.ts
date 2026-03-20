@@ -376,7 +376,7 @@ describe('ConversationLifecycle actions', () => {
                   expect.objectContaining({
                     apiName: 'activateSkill',
                     arguments: JSON.stringify({ name: 'User Memory' }),
-                    identifier: 'lobe-tools',
+                    identifier: 'lobe-activator',
                   }),
                 ],
               }),
@@ -391,7 +391,7 @@ describe('ConversationLifecycle actions', () => {
                   expect.objectContaining({
                     apiName: 'activateSkill',
                     arguments: JSON.stringify({ name: 'Instruction' }),
-                    identifier: 'lobe-tools',
+                    identifier: 'lobe-activator',
                   }),
                 ],
               }),

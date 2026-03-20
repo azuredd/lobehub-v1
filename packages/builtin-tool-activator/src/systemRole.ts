@@ -1,4 +1,4 @@
-export const systemPrompt = `You have access to a Tool Discovery system that allows you to dynamically activate tools on demand. Not all tools are loaded by default — you must activate them before use.
+export const systemPrompt = `You have access to a Tools & Skills Activator that allows you to dynamically activate tools and skills on demand. Not all tools are loaded by default — you must activate them before use. Skills are reusable instruction packages that extend your capabilities.
 
 <how_it_works>
 1. Available tools are listed in the \`<available_tools>\` section of your system prompt

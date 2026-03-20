@@ -172,7 +172,7 @@ export class StreamingExecutorActionImpl {
       { model: agentConfigData.model, provider: agentConfigData.provider! },
       effectivePluginIds,
     );
-    // When skillActivateMode is 'manual', exclude only discovery tools (lobe-tools, lobe-skill-store)
+    // When skillActivateMode is 'manual', exclude only discovery tools (lobe-activator, lobe-skill-store)
     // so that externally enabled tools (sandbox, web browsing, etc.) remain available
     const isManualMode = agentConfig.chatConfig?.skillActivateMode === 'manual';
 
@@ -490,7 +490,7 @@ export class StreamingExecutorActionImpl {
       const currentDBMessages = this.#get().dbMessagesMap[messageKey] || [];
       // Use selectTodosFromMessages selector (shared with UI display)
       const todos = selectTodosFromMessages(currentDBMessages);
-      // Accumulate activated tool IDs from lobe-tools messages
+      // Accumulate activated tool IDs from lobe-activator messages
       const activatedToolIds = selectActivatedToolIdsFromMessages(currentDBMessages);
       // Accumulate activated skills from activateSkill messages
       const activatedSkills = selectActivatedSkillsFromMessages(currentDBMessages);

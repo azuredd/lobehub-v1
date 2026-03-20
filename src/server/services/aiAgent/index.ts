@@ -407,7 +407,7 @@ export class AiAgentService {
     ];
     log('execAgent: agent configured plugins: %O', pluginIds);
 
-    // When skillActivateMode is 'manual', exclude only discovery tools (lobe-tools, lobe-skill-store)
+    // When skillActivateMode is 'manual', exclude only discovery tools (lobe-activator, lobe-skill-store)
     // so that externally enabled tools (sandbox, web browsing, etc.) remain available
     const isManualMode = agentConfig.chatConfig?.skillActivateMode === 'manual';
 

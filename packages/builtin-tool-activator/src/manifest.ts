@@ -1,14 +1,14 @@
 import type { BuiltinToolManifest } from '@lobechat/types';
 
 import { systemPrompt } from './systemRole';
-import { LobeToolIdentifier, ToolsActivatorApiName } from './types';
+import { ActivatorApiName, LobeActivatorIdentifier } from './types';
 
-export const LobeToolsManifest: BuiltinToolManifest = {
+export const LobeActivatorManifest: BuiltinToolManifest = {
   api: [
     {
       description:
         'Activate tools from the <available_tools> list so their full API schemas become available for use. Call this before using any tool that is not yet activated. You can activate multiple tools at once.',
-      name: ToolsActivatorApiName.activateTools,
+      name: ActivatorApiName.activateTools,
       parameters: {
         properties: {
           identifiers: {
@@ -27,7 +27,7 @@ export const LobeToolsManifest: BuiltinToolManifest = {
     {
       description:
         'Activate a skill by name to load its instructions. Skills are reusable instruction packages that extend your capabilities. Returns the skill content that you should follow to complete the task. If the skill is not found, returns a list of available skills.',
-      name: ToolsActivatorApiName.activateSkill,
+      name: ActivatorApiName.activateSkill,
       parameters: {
         properties: {
           name: {
@@ -40,11 +40,11 @@ export const LobeToolsManifest: BuiltinToolManifest = {
       },
     },
   ],
-  identifier: LobeToolIdentifier,
+  identifier: LobeActivatorIdentifier,
   meta: {
     avatar: '🔧',
-    description: 'Discover and activate tools on demand',
-    title: 'Tools',
+    description: 'Discover and activate tools and skills',
+    title: 'Tools & Skills Activator',
   },
   systemRole: systemPrompt,
   type: 'builtin',

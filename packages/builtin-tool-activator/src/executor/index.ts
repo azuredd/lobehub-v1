@@ -1,20 +1,20 @@
 import { BaseExecutor, type BuiltinToolContext, type BuiltinToolResult } from '@lobechat/types';
 
-import type { ToolsActivatorExecutionRuntime } from '../ExecutionRuntime';
+import type { ActivatorExecutionRuntime } from '../ExecutionRuntime';
 import {
   type ActivateSkillParams,
   type ActivateToolsParams,
-  LobeToolIdentifier,
-  ToolsActivatorApiName,
+  ActivatorApiName,
+  LobeActivatorIdentifier,
 } from '../types';
 
-class ToolsActivatorExecutor extends BaseExecutor<typeof ToolsActivatorApiName> {
-  readonly identifier = LobeToolIdentifier;
-  protected readonly apiEnum = ToolsActivatorApiName;
+class ActivatorExecutor extends BaseExecutor<typeof ActivatorApiName> {
+  readonly identifier = LobeActivatorIdentifier;
+  protected readonly apiEnum = ActivatorApiName;
 
-  private runtime: ToolsActivatorExecutionRuntime;
+  private runtime: ActivatorExecutionRuntime;
 
-  constructor(runtime: ToolsActivatorExecutionRuntime) {
+  constructor(runtime: ActivatorExecutionRuntime) {
     super();
     this.runtime = runtime;
   }
@@ -78,4 +78,4 @@ class ToolsActivatorExecutor extends BaseExecutor<typeof ToolsActivatorApiName> 
   };
 }
 
-export { ToolsActivatorExecutor };
+export { ActivatorExecutor };

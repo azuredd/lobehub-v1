@@ -1,4 +1,4 @@
-export { LobeToolsManifest } from './manifest';
+export { LobeActivatorManifest } from './manifest';
 export { systemPrompt } from './systemRole';
 export {
   type ActivatedToolInfo,
@@ -6,6 +6,6 @@ export {
   type ActivateSkillState,
   type ActivateToolsParams,
   type ActivateToolsState,
-  LobeToolIdentifier,
-  ToolsActivatorApiName,
+  ActivatorApiName,
+  LobeActivatorIdentifier,
 } from './types';

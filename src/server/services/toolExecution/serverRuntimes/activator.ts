@@ -1,11 +1,11 @@
 import { builtinSkills } from '@lobechat/builtin-skills';
-import { SkillsExecutionRuntime } from '@lobechat/builtin-tool-skills/executionRuntime';
-import { LobeToolIdentifier } from '@lobechat/builtin-tool-tools';
+import { LobeActivatorIdentifier } from '@lobechat/builtin-tool-activator';
 import {
+  ActivatorExecutionRuntime,
+  type ActivatorRuntimeService,
   type ToolManifestInfo,
-  ToolsActivatorExecutionRuntime,
-  type ToolsActivatorRuntimeService,
-} from '@lobechat/builtin-tool-tools/executionRuntime';
+} from '@lobechat/builtin-tool-activator/executionRuntime';
+import { SkillsExecutionRuntime } from '@lobechat/builtin-tool-skills/executionRuntime';
 
 import { AgentSkillModel } from '@/database/models/agentSkill';
 import { filterBuiltinSkills } from '@/helpers/skillFilters';
@@ -16,7 +16,7 @@ import { type ServerRuntimeRegistration } from './types';
  * Tools Activator Server Runtime
  * Resolves tool manifests from context.toolManifestMap (populated by the agent state).
  */
-export const toolsActivatorRuntime: ServerRuntimeRegistration = {
+export const activatorRuntime: ServerRuntimeRegistration = {
   factory: async (context) => {
     const activatedIds: string[] = [];
 
@@ -37,7 +37,7 @@ export const toolsActivatorRuntime: ServerRuntimeRegistration = {
       });
     }
 
-    const service: ToolsActivatorRuntimeService = {
+    const service: ActivatorRuntimeService = {
       activateSkill: skillsRuntime ? (args) => skillsRuntime!.activateSkill(args) : undefined,
       getActivatedToolIds: () => [...activatedIds],
       getToolManifests: async (identifiers: string[]): Promise<ToolManifestInfo[]> => {
@@ -71,7 +71,7 @@ export const toolsActivatorRuntime: ServerRuntimeRegistration = {
       },
     };
 
-    return new ToolsActivatorExecutionRuntime({ service });
+    return new ActivatorExecutionRuntime({ service });
   },
-  identifier: LobeToolIdentifier,
+  identifier: LobeActivatorIdentifier,
 };
