@@ -1,7 +1,7 @@
 'use client';
 
 import { Flexbox } from '@lobehub/ui';
-import { memo, useEffect, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 
 import { useFolderPath } from '@/routes/(main)/resource/features/hooks/useFolderPath';
 import { useResourceManagerUrlSync } from '@/routes/(main)/resource/features/hooks/useResourceManagerUrlSync';
@@ -16,6 +16,7 @@ import ListView from './ListView';
 import MasonryView from './MasonryView';
 import SearchResultsOverlay from './SearchResultsOverlay';
 import { useCheckTaskStatus } from './useCheckTaskStatus';
+import { useResetSelectionOnQueryChange } from './hooks/useResetSelectionOnQueryChange';
 
 /**
  * Explore resource items in a library
@@ -30,18 +31,9 @@ const ResourceExplorer = memo(() => {
   useResourceManagerUrlSync();
 
   // Get state from Resource Manager store
-  const [libraryId, category, viewMode, searchQuery, setSelectedFileIds, sorter, sortType] =
-    useResourceManagerStore((s) => [
-      s.libraryId,
-      s.category,
-      s.viewMode,
-      s.searchQuery,
-      s.setSelectedFileIds,
-      s.sorter,
-      s.sortType,
-    ]);
-
-  // searchQuery is still subscribed above for selection-clearing effect below
+  const [libraryId, category, viewMode, searchQuery, sorter, sortType] = useResourceManagerStore(
+    (s) => [s.libraryId, s.category, s.viewMode, s.searchQuery, s.sorter, s.sortType],
+  );
 
   // Get folder path for empty state check
   const { currentFolderSlug } = useFolderPath();
@@ -87,10 +79,12 @@ const ResourceExplorer = memo(() => {
   // Check task status
   useCheckTaskStatus(data);
 
-  // Clear selections when category/library/search changes
-  useEffect(() => {
-    setSelectedFileIds([]);
-  }, [category, libraryId, searchQuery, setSelectedFileIds]);
+  useResetSelectionOnQueryChange({
+    category,
+    currentFolderSlug,
+    libraryId,
+    searchQuery,
+  });
 
   const showEmptyStatus = !isLoading && !isValidating && data?.length === 0 && !currentFolderSlug;
 
