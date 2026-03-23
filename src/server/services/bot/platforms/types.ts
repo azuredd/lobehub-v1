@@ -109,6 +109,15 @@ export interface PlatformClient {
   /** Parse a composite message ID into the platform-native format. */
   parseMessageId: (compositeId: string) => string | number;
 
+  /**
+   * Register bot commands with the platform (e.g., Telegram setMyCommands).
+   * Called once during bot initialization with the list of available commands.
+   * Optional — platforms that don't support command menus can omit this.
+   */
+  registerBotCommands?: (
+    commands: Array<{ command: string; description: string }>,
+  ) => Promise<void>;
+
   /** Strip platform-specific bot mention artifacts from user input. */
   sanitizeUserInput?: (text: string) => string;
 
