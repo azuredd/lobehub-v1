@@ -66,4 +66,26 @@ describeIfKey('Search1APIImpl integration', { timeout: 30_000 }, () => {
     // When single engine specified, engines field should contain it
     expect(result.results[0].engines).toContain('google');
   });
+
+  it('should handle single engine with week time range', async () => {
+    const result = await impl.query('latest open source AI frameworks', {
+      searchEngines: ['google'],
+      searchTimeRange: 'week',
+    });
+
+    expect(result.query).toBe('latest open source AI frameworks');
+    expect(result.results).toBeDefined();
+    expect(Array.isArray(result.results)).toBe(true);
+  });
+
+  it('should handle multiple engines with week time range', async () => {
+    const result = await impl.query('best practices for TypeScript monorepo setup', {
+      searchEngines: ['google', 'bing'],
+      searchTimeRange: 'week',
+    });
+
+    expect(result.query).toBe('best practices for TypeScript monorepo setup');
+    expect(result.results).toBeDefined();
+    expect(Array.isArray(result.results)).toBe(true);
+  });
 });
