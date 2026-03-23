@@ -147,7 +147,7 @@ export const useCategory = () => {
         key: SettingsTabs.Memory,
         label: t('tab.memory'),
       },
-      enableBusinessFeatures && {
+      {
         icon: KeyRound,
         key: SettingsTabs.Creds,
         label: t('tab.creds'),
