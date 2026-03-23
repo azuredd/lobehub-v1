@@ -949,7 +949,7 @@ describe('LobeOpenAICompatibleFactory', () => {
     it('should use custom stream handler when provided', async () => {
       // Create a custom stream handler that handles both ReadableStream and OpenAI Stream
       const customStreamHandler = vi.fn(
-        (stream: ReadableStream | Stream<OpenAI.ChatCompletionChunk>, _options?: any) => {
+        (stream: ReadableStream | Stream<OpenAI.ChatCompletionChunk>) => {
           const readableStream =
             stream instanceof ReadableStream ? stream : stream.toReadableStream();
           return new ReadableStream({
@@ -1009,13 +1009,6 @@ describe('LobeOpenAICompatibleFactory', () => {
       await instance.chat(payload);
 
       expect(customStreamHandler).toHaveBeenCalled();
-
-      // Verify payload is passed to custom stream handler
-      const handlerOptions = customStreamHandler.mock.calls[0][1];
-      expect(handlerOptions.payload).toMatchObject({
-        model: 'test-model',
-        provider: ModelProvider.OpenAI,
-      });
     });
 
     it('should use custom transform handler for non-streaming response', async () => {

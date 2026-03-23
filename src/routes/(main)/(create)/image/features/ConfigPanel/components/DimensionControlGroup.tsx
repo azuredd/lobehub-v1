@@ -34,7 +34,7 @@ const DimensionControlGroup = memo(() => {
     options,
   } = useDimensionControl();
 
-  // Build aspect ratio selector options
+  // 构建宽高比选择器的选项
   const aspectRatioOptions = useMemo(
     () =>
       options.map((ratio) => ({
@@ -50,7 +50,7 @@ const DimensionControlGroup = memo(() => {
 
   return (
     <Flexbox gap={16}>
-      {/* Aspect ratio selector */}
+      {/* 宽高比选择器 */}
       <Flexbox gap={8}>
         <Flexbox horizontal align="center" distribution="space-between">
           <span style={styles.label}>{t('config.aspectRatio.label')}</span>
@@ -70,7 +70,7 @@ const DimensionControlGroup = memo(() => {
         />
       </Flexbox>
 
-      {/* Width slider */}
+      {/* 宽度滑块 */}
       {widthSchema && (
         <Flexbox gap={8}>
           <span style={styles.label}>{t('config.width.label')}</span>
@@ -83,7 +83,7 @@ const DimensionControlGroup = memo(() => {
         </Flexbox>
       )}
 
-      {/* Height slider */}
+      {/* 高度滑块 */}
       {heightSchema && (
         <Flexbox gap={8}>
           <span style={styles.label}>{t('config.height.label')}</span>

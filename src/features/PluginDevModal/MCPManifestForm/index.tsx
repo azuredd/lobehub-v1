@@ -28,10 +28,10 @@ const STDIO_ARGS = ['customParams', 'mcp', 'args'];
 const STDIO_ENV = ['customParams', 'mcp', 'env'];
 const MCP_TYPE = ['customParams', 'mcp', 'type'];
 const DESC_TYPE = ['customParams', 'description'];
-// Authentication-related constants
+// 新增认证相关常量
 const AUTH_TYPE = ['customParams', 'mcp', 'auth', 'type'];
 const AUTH_TOKEN = ['customParams', 'mcp', 'auth', 'token'];
-// Headers-related constants
+// 新增 headers 相关常量
 const HEADERS = ['customParams', 'mcp', 'headers'];
 
 const MCPManifestForm = ({ form, isEditMode }: MCPManifestFormProps) => {
@@ -43,7 +43,7 @@ const MCPManifestForm = ({ form, isEditMode }: MCPManifestFormProps) => {
   const [isTesting, setIsTesting] = useState(false);
   const testMcpConnection = useToolStore((s) => s.testMcpConnection);
 
-  // Use identifier to track test state (if present in the form)
+  // 使用 identifier 来跟踪测试状态（如果表单中有的话）
   const formValues = form.getFieldsValue();
   const identifier = formValues?.identifier || 'temp-test-id';
   const testState = useToolStore(mcpStoreSelectors.getMCPConnectionTestState(identifier), isEqual);
@@ -63,7 +63,7 @@ const MCPManifestForm = ({ form, isEditMode }: MCPManifestFormProps) => {
         ...(mcpType === 'http' ? [HTTP_URL_KEY] : [STDIO_COMMAND, STDIO_ARGS]),
       ];
 
-      // For HTTP type, also validate authentication fields
+      // 如果是 HTTP 类型，还需要验证认证字段
       if (mcpType === 'http') {
         fieldsToValidate.push(AUTH_TYPE);
         const currentAuthType = form.getFieldValue(AUTH_TYPE);
@@ -90,7 +90,7 @@ const MCPManifestForm = ({ form, isEditMode }: MCPManifestFormProps) => {
       const description = values.customParams?.description;
       const avatar = values.customParams?.avatar;
 
-      // Use mcpStore's testMcpConnection method
+      // 使用 mcpStore 的 testMcpConnection 方法
       const result = await testMcpConnection({
         connection: mcp,
         identifier: id,
@@ -101,10 +101,10 @@ const MCPManifestForm = ({ form, isEditMode }: MCPManifestFormProps) => {
         // Optionally update form if manifest ID differs or to store the fetched manifest
         // Be careful about overwriting user input if not desired
         form.setFieldsValue({ manifest: result.manifest });
-        setConnectionError(null); // Clear local error state
+        setConnectionError(null); // 清除本地错误状态
         setErrorMetadata(null);
       } else if (result.error) {
-        // Store has already handled the error state; optionally show additional user-friendly messages here
+        // Store 已经处理了错误状态，这里可以选择显示额外的用户友好提示
         const errorMessage = t('error.testConnectionFailed', {
           error: result.error,
         });
@@ -199,7 +199,7 @@ const MCPManifestForm = ({ form, isEditMode }: MCPManifestFormProps) => {
                     validator: async (_, value) => {
                       if (!value) return true;
 
-                      // Throws automatically if the value is not a valid URL
+                      // 如果不是 URL 就会自动抛出错误
                       new URL(value);
                     },
                   },

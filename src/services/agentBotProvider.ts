@@ -44,14 +44,6 @@ class AgentBotProviderService {
   testConnection = async (params: { applicationId: string; platform: string }) => {
     return lambdaClient.agentBotProvider.testConnection.mutate(params);
   };
-
-  wechatGetQrCode = async () => {
-    return lambdaClient.agentBotProvider.wechatGetQrCode.mutate();
-  };
-
-  wechatPollQrStatus = async (qrcode: string) => {
-    return lambdaClient.agentBotProvider.wechatPollQrStatus.query({ qrcode });
-  };
 }
 
 export const agentBotProviderService = new AgentBotProviderService();

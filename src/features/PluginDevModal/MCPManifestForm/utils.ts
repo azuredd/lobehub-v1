@@ -2,7 +2,7 @@ import { type LobeChatPluginManifest } from '@lobehub/chat-plugin-sdk';
 
 import { safeParseJSON } from '@/utils/safeParseJSON';
 
-// (McpConfig, McpServers, ParsedMcpInput interface definitions remain unchanged)
+// （McpConfig, McpServers, ParsedMcpInput 接口定义保持不变）
 interface McpConfig {
   args?: string[];
   command?: string;
@@ -18,7 +18,7 @@ interface ParsedMcpInput {
   mcpServers?: McpServers;
 }
 
-// Removed DuplicateIdentifier
+// 移除 DuplicateIdentifier
 export enum McpParseErrorCode {
   EmptyMcpServers = 'EmptyMcpServers',
   InvalidJsonStructure = 'InvalidJsonStructure',
@@ -26,7 +26,7 @@ export enum McpParseErrorCode {
   ManifestNotSupported = 'ManifestNotSupported',
 }
 
-// Removed isDuplicate
+// 移除 isDuplicate
 interface ParseSuccessResult {
   identifier: string;
   mcpConfig: McpConfig & { type: 'stdio' | 'http' };
@@ -35,7 +35,7 @@ interface ParseSuccessResult {
 
 interface ParseErrorResult {
   errorCode: McpParseErrorCode;
-  // identifier field may still be useful for displaying the user-input ID when structure errors occur
+  // identifier 字段仍然可能有用，用于在结构错误时也能显示用户输入的 ID
   identifier?: string;
   status: 'error';
 }
@@ -60,7 +60,7 @@ export const parseMcpInput = (value: string): ParseResult => {
 
       if (mcpKeys.length > 0) {
         const identifier = mcpKeys[0];
-        // @ts-expect-error type mismatch
+        // @ts-expect-error type 不一样
         const mcpConfig = parsedJson.mcpServers[identifier];
 
         if (mcpConfig && typeof mcpConfig === 'object' && !Array.isArray(mcpConfig)) {

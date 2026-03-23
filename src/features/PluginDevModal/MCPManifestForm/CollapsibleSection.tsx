@@ -33,11 +33,11 @@ const styles = createStaticStyles(({ css, cssVar }) => ({
 }));
 
 interface CollapsibleSectionProps {
-  /** Child component content */
+  /** 子组件内容 */
   children: ReactNode;
-  /** Whether expanded by default */
+  /** 默认是否展开 */
   defaultExpanded?: boolean;
-  /** Title text */
+  /** 标题文本 */
   title: string;
 }
 

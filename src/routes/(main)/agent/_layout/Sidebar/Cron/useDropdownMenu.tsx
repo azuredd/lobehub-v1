@@ -69,10 +69,7 @@ export const useCronJobDropdownMenu = (
             modal.confirm({
               cancelText: t('cancel', { ns: 'common' }),
               centered: true,
-              content: t(
-                'agentCronJobs.confirmClearTopics' as any,
-                { count: topics.length } as any,
-              ),
+              content: t('agentCronJobs.confirmClearTopics' as any, { count: topics.length }),
               okButtonProps: { danger: true },
               okText: t('ok', { ns: 'common' }),
               onOk: handleClearTopics,

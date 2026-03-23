@@ -3,7 +3,6 @@ import debug from 'debug';
 import { AgentBotProviderModel } from '@/database/models/agentBotProvider';
 import { TopicModel } from '@/database/models/topic';
 import { type LobeChatDatabase } from '@/database/type';
-import { getAgentRuntimeRedisClient } from '@/server/modules/AgentRuntime/redis';
 import { KeyVaultsGateKeeper } from '@/server/modules/KeyVaultsEncrypt';
 import { SystemAgentService } from '@/server/services/systemAgent';
 
@@ -28,7 +27,7 @@ export interface BotCallbackBody {
   lastToolsCalling?: any;
   llmCalls?: number;
   platformThreadId: string;
-  progressMessageId?: string;
+  progressMessageId: string;
   reason?: string;
   reasoning?: string;
   shouldContinue?: boolean;
@@ -73,22 +72,13 @@ export class BotCallbackService {
     const canEdit = entry?.supportsMessageEdit !== false;
 
     if (type === 'step') {
-      if (canEdit && progressMessageId) {
+      // Skip step progress updates for platforms that can't edit messages
+      if (canEdit) {
         await this.handleStep(body, messenger, progressMessageId, client);
-      } else if (body.shouldContinue) {
-        // For platforms without progress messages (e.g. WeChat), still send typing indicator
-        await messenger.triggerTyping();
       }
     } else if (type === 'completion') {
-      await this.handleCompletion(
-        body,
-        messenger,
-        progressMessageId ?? '',
-        client,
-        charLimit,
-        canEdit,
-      );
-      await this.removeEyesReaction(body, client, platformThreadId);
+      await this.handleCompletion(body, messenger, progressMessageId, client, charLimit, canEdit);
+      await this.removeEyesReaction(body, messenger);
       this.summarizeTopicTitle(body, messenger);
     }
   }
@@ -131,9 +121,7 @@ export class BotCallbackService {
       settings: settings || {},
     };
 
-    const client = entry.clientFactory.createClient(config, {
-      redisClient: getAgentRuntimeRedisClient() as any,
-    });
+    const client = entry.clientFactory.createClient(config, {});
     const messenger = client.getMessenger(platformThreadId);
 
     return { charLimit, messenger, client };
@@ -248,17 +236,10 @@ export class BotCallbackService {
 
   private async removeEyesReaction(
     body: BotCallbackBody,
-    client: PlatformClient,
-    platformThreadId: string,
+    messenger: PlatformMessenger,
   ): Promise<void> {
     const { userMessageId } = body;
     if (!userMessageId) return;
-
-    // Thread-starter messages may live in the parent channel (e.g. Discord),
-    // so resolve the correct thread ID before obtaining the messenger.
-    const reactionThreadId =
-      client.resolveReactionThreadId?.(platformThreadId, userMessageId) ?? platformThreadId;
-    const messenger = client.getMessenger(reactionThreadId);
 
     try {
       await messenger.removeReaction(userMessageId, '👀');

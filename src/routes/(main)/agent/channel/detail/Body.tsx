@@ -14,7 +14,6 @@ import type {
 } from '@/server/services/bot/platforms/types';
 
 import type { ChannelFormValues } from './index';
-import QrCodeAuth from './QrCodeAuth';
 
 const prefixCls = 'ant';
 
@@ -190,11 +189,10 @@ const SettingsTitle = memo<{ schema: FieldSchema[] }>(({ schema }) => {
 
 interface BodyProps {
   form: FormInstance<ChannelFormValues>;
-  onQrAuthenticated?: (credentials: { botId: string; botToken: string; userId: string }) => void;
   platformDef: SerializedPlatformDefinition;
 }
 
-const Body = memo<BodyProps>(({ platformDef, form, onQrAuthenticated }) => {
+const Body = memo<BodyProps>(({ platformDef, form }) => {
   const { t: _t } = useTranslation('agent');
   const t = _t as (key: string) => string;
 
@@ -235,21 +233,15 @@ const Body = memo<BodyProps>(({ platformDef, form, onQrAuthenticated }) => {
       style={{ maxWidth: 1024, padding: '16px 0', width: '100%' }}
       variant={'borderless'}
     >
-      {platformDef.authFlow === 'qrcode' && onQrAuthenticated && (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0' }}>
-          <QrCodeAuth onAuthenticated={onQrAuthenticated} />
-        </div>
-      )}
       {applicationIdField && <ApplicationIdField field={applicationIdField} />}
-      {!platformDef.authFlow &&
-        credentialFields.map((field, i) => (
-          <SchemaField
-            divider={applicationIdField ? true : i !== 0}
-            field={field}
-            key={field.key}
-            parentKey="credentials"
-          />
-        ))}
+      {credentialFields.map((field, i) => (
+        <SchemaField
+          divider={applicationIdField ? true : i !== 0}
+          field={field}
+          key={field.key}
+          parentKey="credentials"
+        />
+      ))}
       {settingsFields.length > 0 && (
         <FormGroup
           collapsible

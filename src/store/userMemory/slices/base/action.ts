@@ -4,7 +4,7 @@ import { type SWRResponse } from 'swr';
 import useSWR from 'swr';
 
 import { mutate, useClientDataSWR, useClientDataSWRWithSync } from '@/libs/swr';
-import { memoryCRUDService, userMemoryService } from '@/services/userMemory';
+import { userMemoryService } from '@/services/userMemory';
 import { type StoreSetter } from '@/store/types';
 import { type RetrieveMemoryParams, type RetrieveMemoryResult } from '@/types/userMemory';
 import { LayersEnum } from '@/types/userMemory';
@@ -149,6 +149,7 @@ export class BaseActionImpl {
   };
 
   updateMemory = async (id: string, content: string, layer: LayersEnum): Promise<void> => {
+    const { memoryCRUDService } = await import('@/services/userMemory');
     const {
       resetActivitiesList,
       resetContextsList,

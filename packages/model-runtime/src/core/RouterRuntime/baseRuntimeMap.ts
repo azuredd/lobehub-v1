@@ -13,7 +13,6 @@ import { LobeVertexAI } from '../../providers/vertexai';
 import { LobeVolcengineAI } from '../../providers/volcengine';
 import { LobeXAI } from '../../providers/xai';
 import { LobeXiaomiMiMoAI } from '../../providers/xiaomimimo';
-import { LobeZhipuAI } from '../../providers/zhipu';
 import type { ApiType, RuntimeClass } from './apiTypes';
 
 export const baseRuntimeMap = {
@@ -32,5 +31,4 @@ export const baseRuntimeMap = {
   volcengine: LobeVolcengineAI,
   xai: LobeXAI,
   xiaomimimo: LobeXiaomiMiMoAI,
-  zhipu: LobeZhipuAI,
 } satisfies Record<ApiType, RuntimeClass>;

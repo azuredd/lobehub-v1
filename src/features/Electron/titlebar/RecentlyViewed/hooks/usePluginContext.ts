@@ -64,8 +64,7 @@ export const usePluginContext = (): PluginContext => {
         return findTopicAcrossAllSessions(state.topicDataMap, topicId);
       },
 
-      t: (key: string, options?: Record<string, unknown>) =>
-        t(key as any, options as any) as string,
+      t: (key: string, options?: Record<string, unknown>) => t(key as any, options) as string,
     }),
     [agentMap, topicDataMap, sessionGroups, documents, t],
   );

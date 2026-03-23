@@ -423,10 +423,10 @@ const ImageUploadProgress: FC<ImageUploadProgressProps> = memo(
 
     return (
       <Center className={styles.progress} gap={16} horizontal={false}>
-        {/* Circular progress bar */}
+        {/* 圆形进度条 */}
         <CircularProgress size={60} strokeWidth={6} value={currentProgress} />
 
-        {/* Progress text */}
+        {/* 进度文本 */}
         <div className={styles.progressText}>
           {showCount ? (
             <div className={styles.progressPrimary}>

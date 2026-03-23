@@ -89,7 +89,7 @@ const UrlManifestForm = memo<{ form: FormInstance; isEditMode: boolean }>(
                 }
               },
             },
-            // In edit mode, skip duplicate validation
+            // 编辑模式下，不进行重复校验
             isEditMode
               ? {}
               : {

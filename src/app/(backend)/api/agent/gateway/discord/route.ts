@@ -4,7 +4,6 @@ import { after } from 'next/server';
 
 import { getServerDB } from '@/database/core/db-adaptor';
 import { AgentBotProviderModel } from '@/database/models/agentBotProvider';
-import { getAgentRuntimeRedisClient } from '@/server/modules/AgentRuntime/redis';
 import { KeyVaultsGateKeeper } from '@/server/modules/KeyVaultsEncrypt';
 import { type BotProviderConfig, discord } from '@/server/services/bot/platforms';
 import { BotConnectQueue } from '@/server/services/gateway/botConnectQueue';
@@ -23,10 +22,7 @@ function createDiscordBot(applicationId: string, credentials: Record<string, str
     platform: 'discord',
     settings: {},
   };
-  return discord.clientFactory.createClient(config, {
-    appUrl: process.env.APP_URL,
-    redisClient: getAgentRuntimeRedisClient() as any,
-  });
+  return discord.clientFactory.createClient(config, { appUrl: process.env.APP_URL });
 }
 
 async function processConnectQueue(remainingMs: number): Promise<number> {

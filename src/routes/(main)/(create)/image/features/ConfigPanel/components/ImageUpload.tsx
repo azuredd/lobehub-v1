@@ -213,7 +213,7 @@ const isLocalBlobUrl = (url: string): boolean => url.startsWith('blob:');
 // ======== Sub-Components ======== //
 
 /**
- * Circular progress bar component (reused from MultiImagesUpload)
+ * 圆形进度条组件 (复用自 MultiImagesUpload)
  */
 interface CircularProgressProps {
   showText?: boolean; // 0-100
@@ -303,7 +303,7 @@ const CircularProgress: FC<CircularProgressProps> = memo(
 CircularProgress.displayName = 'CircularProgress';
 
 /**
- * Placeholder view component
+ * 占位视图组件
  */
 interface PlaceholderProps {
   height?: number;
@@ -340,7 +340,7 @@ const Placeholder: FC<PlaceholderProps> = memo(({ isDragOver, onClick, height })
 Placeholder.displayName = 'Placeholder';
 
 /**
- * Uploading view component
+ * 上传中视图组件
  */
 interface UploadingDisplayProps {
   previewUrl: string;
@@ -367,7 +367,7 @@ const UploadingDisplay: FC<UploadingDisplayProps> = memo(({ previewUrl, progress
 UploadingDisplay.displayName = 'UploadingDisplay';
 
 /**
- * Success view component
+ * 成功视图组件
  */
 interface SuccessDisplayProps {
   imageUrl: string;

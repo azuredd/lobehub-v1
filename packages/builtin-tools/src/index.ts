@@ -1,6 +1,7 @@
 import { AgentBuilderManifest } from '@lobechat/builtin-tool-agent-builder';
 import { AgentDocumentsManifest } from '@lobechat/builtin-tool-agent-documents';
 import { AgentManagementManifest } from '@lobechat/builtin-tool-agent-management';
+import { BriefManifest } from '@lobechat/builtin-tool-brief';
 import { CalculatorManifest } from '@lobechat/builtin-tool-calculator';
 import { CloudSandboxManifest } from '@lobechat/builtin-tool-cloud-sandbox';
 import { GroupAgentBuilderManifest } from '@lobechat/builtin-tool-group-agent-builder';
@@ -14,10 +15,11 @@ import { PageAgentManifest } from '@lobechat/builtin-tool-page-agent';
 import { RemoteDeviceManifest } from '@lobechat/builtin-tool-remote-device';
 import { SkillStoreManifest } from '@lobechat/builtin-tool-skill-store';
 import { SkillsManifest } from '@lobechat/builtin-tool-skills';
+import { TaskManifest } from '@lobechat/builtin-tool-task';
 import { LobeToolsManifest } from '@lobechat/builtin-tool-tools';
 import { TopicReferenceManifest } from '@lobechat/builtin-tool-topic-reference';
 import { WebBrowsingManifest } from '@lobechat/builtin-tool-web-browsing';
-import { isDesktop, RECOMMENDED_SKILLS, RecommendedSkillType } from '@lobechat/const';
+import { isDesktop } from '@lobechat/const';
 import { type LobeBuiltinTool } from '@lobechat/types';
 
 /**
@@ -163,16 +165,18 @@ export const builtinTools: LobeBuiltinTool[] = [
     manifest: TopicReferenceManifest,
     type: 'builtin',
   },
+  {
+    discoverable: false,
+    hidden: true,
+    identifier: TaskManifest.identifier,
+    manifest: TaskManifest,
+    type: 'builtin',
+  },
+  {
+    discoverable: false,
+    hidden: true,
+    identifier: BriefManifest.identifier,
+    manifest: BriefManifest,
+    type: 'builtin',
+  },
 ];
-
-/**
- * Non-hidden builtin tools that are NOT in RECOMMENDED_SKILLS.
- * These tools default to uninstalled and must be explicitly installed by the user from the Skill Store.
- */
-const recommendedBuiltinIds = new Set(
-  RECOMMENDED_SKILLS.filter((s) => s.type === RecommendedSkillType.Builtin).map((s) => s.id),
-);
-
-export const defaultUninstalledBuiltinTools = builtinTools
-  .filter((t) => !t.hidden && !recommendedBuiltinIds.has(t.identifier))
-  .map((t) => t.identifier);
